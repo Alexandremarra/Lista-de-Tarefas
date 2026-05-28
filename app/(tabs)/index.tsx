@@ -1,17 +1,19 @@
 import { Image } from 'expo-image';
-import { StatusBar, FlatList, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StatusBar, FlatList, Platform, StyleSheet, Text, TextInput, View, TouchableOpacity,  } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
+import Navbar from '@/components/navbar';
 // import { DATA } from '@/components/SecondComponent';
 
 export default function HomeScreen() {
   return (
   
     <View>
+      <Navbar/>
       <TextInput
         placeholder="Digite seu nome"
         style={{
