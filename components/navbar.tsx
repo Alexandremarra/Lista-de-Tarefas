@@ -1,98 +1,85 @@
-// navbar.tsx
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
-
-const { width, height } = Dimensions.get('window');
-
-const Navbar = () => {
-  const handlePress = (page: string) => {
-    console.log(`Abrindo página: ${page}`);
-  };
-
-  return (
-    <View style={styles.container}>
-      {/* Lado esquerdo */}
-      <View style={styles.leftContainer}>
-        <Text style={styles.title}>Saúde e Bem Estar</Text>
-      </View>
-
-      {/* Lado direito */}
-      <View style={styles.rightContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handlePress('Saúde')}
-        >
-          <Text style={styles.buttonText}>Saúde</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handlePress('Academia')}
-        >
-          <Text style={styles.buttonText}>Academia</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handlePress('Estudar')}
-        >
-          <Text style={styles.buttonText}>Estudar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+type NavbarProps = {
+  title: string;
+  actionLabel?: string;
+  onActionPress?: () => void;
+  onBackPress?: () => void;
 };
 
-export default Navbar;
+export default function Navbar({
+  title,
+  actionLabel,
+  onActionPress,
+  onBackPress,
+}: NavbarProps) {
+  return (
+    <View style={styles.container}>
+      {onBackPress ? (
+        <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
+          <Text style={styles.backText}>← Voltar</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.backPlaceholder} />
+      )}
+
+      <Text style={styles.title}>{title}</Text>
+
+      {actionLabel && onActionPress ? (
+        <TouchableOpacity style={styles.button} onPress={onActionPress}>
+          <Text style={styles.buttonText}>{actionLabel}</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.backPlaceholder} />
+      )}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
-    width: width * 0.8, // 80% da largura da tela
-    height: height * 0.2, // 20% da altura da tela
-    backgroundColor: '#1E1E1E',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 30,
-    borderRadius: 20,
-    paddingHorizontal: 20,
+    width: "100%",
+    backgroundColor: "#2f343d",
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-
-  leftContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
   },
-
-  rightContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+  backPlaceholder: {
+    width: 76,
   },
-
+  backText: {
+    color: "#f1f2f4",
+    fontSize: 13,
+    fontWeight: "700",
+  },
   title: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: 'bold',
+    color: "#f1f2f4",
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    flex: 1,
   },
-
   button: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
   },
-
   buttonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 14,
+    color: "#f1f2f4",
+    fontSize: 13,
+    fontWeight: "700",
   },
 });
