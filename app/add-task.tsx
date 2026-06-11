@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { RootStackParamList } from "../App";
 import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 import { useTaskContext } from "../context/TaskContext";
 
 type Props = StackScreenProps<RootStackParamList, "AddTask">;

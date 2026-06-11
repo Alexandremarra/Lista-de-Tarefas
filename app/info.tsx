@@ -2,7 +2,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { RootStackParamList } from "../App";
 import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 
 type Props = StackScreenProps<RootStackParamList, "Info">;
 
