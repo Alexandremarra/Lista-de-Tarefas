@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 export default function Footer() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Grupo: Time Lista de Tarefas</Text>
+      <Text style={styles.text}>Grupo: Alexandre A. Alexandre R e Elizeu B.</Text>
     </View>
   );
 }
