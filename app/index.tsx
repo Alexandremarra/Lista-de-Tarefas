@@ -1,5 +1,5 @@
 import { StackScreenProps } from "@react-navigation/stack";
-import React from "react"; // Boa prática manter o React importado explicitamente
+import React from "react";
 import {
     FlatList,
     StyleSheet,
@@ -7,30 +7,24 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { RootStackParamList } from "../App";
+import { RootStackParamList } from "../App"; 
+
 import Footer from "../components/Footer";
 import Navbar from "../components/navbar";
 import TaskItem from "../components/TaskItem";
 import { Task, useTaskContext } from "../context/TaskContext";
-
 type Props = StackScreenProps<RootStackParamList, "Home">;
 
-export default function HomeScreen({ navigation }: Props) {
-  // Puxamos tasks e a função de deletar diretamente do seu Contexto customizado
-  const { tasks, deleteTask } = useTaskContext(); 
+export default function IndexScreen({ navigation }: Props) {
+  // 1. Puxamos as novas funções do seu contexto atualizado
+  const { tasks, deleteTask, updateStatus } = useTaskContext(); 
 
-  const completedCount = tasks.filter((task) => task.completed).length;
-  const pendingCount = tasks.length - completedCount;
+  // 2. Atualizamos os contadores para refletir os 3 estados
+  const completedCount = tasks.filter((task) => task.status === "concluida").length;
+  const inProgressCount = tasks.filter((task) => task.status === "andamento").length;
+  const pendingCount = tasks.filter((task) => task.status === "pendente").length;
+  
   const progress = tasks.length ? completedCount / tasks.length : 0;
-
-  const renderTask = ({ item }: { item: Task }) => (
-    <TaskItem
-      task={item}
-      onPress={() => navigation.navigate("TaskDetails", { taskId: item.id })}
-      // Passamos a função de deletar como prop para dentro do item, caso ele precise dela
-      onDelete={() => deleteTask(item.id)} 
-    />
-  );
 
   return (
     <View style={styles.safe}>
@@ -45,7 +39,7 @@ export default function HomeScreen({ navigation }: Props) {
           <View style={styles.summaryHeader}>
             <Text style={styles.summaryTitle}>Resumo do dia</Text>
             <Text style={styles.summarySubtitle}>
-              {pendingCount} pendentes • {completedCount} concluídas
+              {pendingCount} P | {inProgressCount} And | {completedCount} C
             </Text>
           </View>
           <Text style={styles.summaryNote}>
@@ -65,7 +59,14 @@ export default function HomeScreen({ navigation }: Props) {
         <FlatList
           data={tasks}
           keyExtractor={(item) => item.id}
-          renderItem={renderTask}
+          renderItem={({ item }) => (
+            <TaskItem
+              task={item}
+              onPress={() => navigation.navigate("TaskDetails", { taskId: item.id })}
+              onDelete={() => deleteTask(item.id)} 
+              onStatusChange={(newStatus) => updateStatus(item.id, newStatus)}
+            />
+          )}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={

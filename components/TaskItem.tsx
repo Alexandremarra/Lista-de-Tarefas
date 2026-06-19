@@ -6,15 +6,16 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { Task } from "../context/TaskContext";
+import { Task, TaskStatus } from "../context/TaskContext";
 
 type TaskItemProps = {
   task: Task;
   onPress: () => void;
-  onDelete: () => void; // Adicionado para receber a função de exclusão
+  onDelete: () => void;
+  onStatusChange: (status: TaskStatus) => void; // Nova prop para alterar o status
 };
 
-export default function TaskItem({ task, onPress, onDelete }: TaskItemProps) {
+export default function TaskItem({ task, onPress, onDelete, onStatusChange }: TaskItemProps) {
   const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -25,53 +26,64 @@ export default function TaskItem({ task, onPress, onDelete }: TaskItemProps) {
     }).start();
   }, [animation]);
 
+  // Função auxiliar para renderizar o texto do status atual
+  const renderStatusText = () => {
+    if (task.status === "concluida") return "✅ concluída";
+    if (task.status === "andamento") return "🚀 em andamento";
+    return "🕐 pendente";
+  };
+
   return (
     <Animated.View
       style={[
         styles.container,
-        task.completed && styles.completedContainer,
-        {
-          opacity: animation,
-          transform: [
-            {
-              translateY: animation.interpolate({
-                inputRange: [0, 1],
-                outputRange: [16, 0],
-              }),
-            },
-          ],
-        },
+        task.status === "concluida" && styles.completedContainer,
+        task.status === "andamento" && styles.inProgressContainer,
+        { opacity: animation },
       ]}
     >
-      {/* Lado esquerdo: Informações da tarefa (clicável para ver detalhes) */}
       <TouchableOpacity 
         onPress={onPress} 
         activeOpacity={0.8} 
         style={styles.taskDetailsContainer}
       >
         <View>
-          <Text style={[styles.title, task.completed && styles.completedText]}>
+          <Text style={[styles.title, task.status === "concluida" && styles.completedText]}>
             {task.title}
           </Text>
-          <Text
-            style={[
-              styles.status,
-              task.completed ? styles.completedText : styles.pendingText,
-            ]}
-          >
-            {task.completed ? "✅ concluída" : "🕐 pendente"}
-          </Text>
+          <Text style={styles.status}>{renderStatusText()}</Text>
         </View>
       </TouchableOpacity>
 
-      {/* Lado direito: Botão de Deletar */}
-      <TouchableOpacity 
-        onPress={onDelete} 
-        activeOpacity={0.7} 
-        style={styles.deleteButton}
-      >
-        <Text style={styles.deleteButtonText}>🗑️</Text>
-      </TouchableOpacity>
+      {/* Grupo de Ações (Botões Laterais) */}
+      <View style={styles.actionsContainer}>
+        {task.status !== "concluida" && (
+          <>
+            {/* Botão Em Andamento */}
+            {task.status !== "andamento" && (
+              <TouchableOpacity 
+                onPress={() => onStatusChange("andamento")} 
+                style={[styles.actionButton, styles.progressButton]}
+              >
+                <Text>⏳</Text>
+              </TouchableOpacity>
+            )}
+            
+            {/* Botão Concluir */}
+            <TouchableOpacity 
+              onPress={() => onStatusChange("concluida")} 
+              style={[styles.actionButton, styles.checkButton]}
+            >
+              <Text>✅</Text>
+            </TouchableOpacity>
+          </>
+        )}
+
+        {/* Botão Deletar */}
+        <TouchableOpacity onPress={onDelete} style={[styles.actionButton, styles.deleteButton]}>
+          <Text>🗑️</Text>
+        </TouchableOpacity>
+      </View>
     </Animated.View>
   );
 }
@@ -84,23 +96,21 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     borderWidth: 1,
     borderColor: "#dde5eb",
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 2,
-    // Garante que os textos e o botão fiquem lado a lado horizontalmente
     flexDirection: "row", 
     alignItems: "center",
     justifyContent: "space-between",
   },
   taskDetailsContainer: {
-    flex: 1, // Faz os textos ocuparem todo o espaço disponível, empurrando o botão para a ponta
-    marginRight: 12,
+    flex: 1,
+    marginRight: 8,
   },
   completedContainer: {
-    opacity: 0.72,
+    opacity: 0.6,
     backgroundColor: "#f4f8fb",
+  },
+  inProgressContainer: {
+    borderColor: "#3b82f6", // Borda azul para destacar o andamento
+    backgroundColor: "#eff6ff",
   },
   title: {
     color: "#2b323d",
@@ -111,22 +121,23 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 13,
     color: "#59646f",
-  },
-  pendingText: {
-    color: "#626d7a",
+    fontWeight: "600",
   },
   completedText: {
     textDecorationLine: "line-through",
     color: "#7b8d9e",
   },
-  deleteButton: {
-    backgroundColor: "#fee2e2", // Um fundo vermelho bem clarinho (estilo tailwind red-100)
-    padding: 10,
-    borderRadius: 12,
+  actionsContainer: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  actionButton: {
+    padding: 8,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
   },
-  deleteButtonText: {
-    fontSize: 16,
-  },
+  progressButton: { backgroundColor: "#fef3c7" }, // Amarelo claro
+  checkButton: { backgroundColor: "#dcfce7" },    // Verde claro
+  deleteButton: { backgroundColor: "#fee2e2" },   // Vermelho claro
 });

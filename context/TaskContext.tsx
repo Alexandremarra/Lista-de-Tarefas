@@ -1,18 +1,21 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 
+// 1. Atualizamos o tipo do status para aceitar as três opções
+export type TaskStatus = "pendente" | "andamento" | "concluida";
+
 export type Task = {
   id: string;
   title: string;
   description: string;
-  completed: boolean;
+  status: TaskStatus; // Mudamos de 'completed: boolean' para 'status: TaskStatus'
 };
 
 type TaskContextData = {
   tasks: Task[];
   addTask: (title: string, description: string) => void;
-  toggleTask: (id: string) => void;
+  updateStatus: (id: string, newStatus: TaskStatus) => void; // Nova função genérica de status
   getTaskById: (id: string) => Task | undefined;
-  deleteTask: (id: string) => void; // Adicionado na assinatura do contexto
+  deleteTask: (id: string) => void;
 };
 
 const TaskContext = createContext<TaskContextData | undefined>(undefined);
@@ -25,22 +28,22 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       id: String(Date.now()),
       title,
       description,
-      completed: false,
+      status: "pendente", // Começa como pendente
     };
     setTasks((prevTasks) => [newTask, ...prevTasks]);
   };
 
-  const toggleTask = (id: string) => {
+  // Altera o status da tarefa para qualquer um dos três estados
+  const updateStatus = (id: string, newStatus: TaskStatus) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+        task.id === id ? { ...task, status: newStatus } : task
       )
     );
   };
 
   const getTaskById = (id: string) => tasks.find((task) => task.id === id);
 
-  // FUNÇÃO DE EXCLUSÃO: Filtra mantendo apenas o que for diferente do ID recebido
   const deleteTask = (id: string) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
@@ -50,9 +53,9 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       value={{ 
         tasks, 
         addTask, 
-        toggleTask, 
+        updateStatus, 
         getTaskById, 
-        deleteTask // Injetado no Provider
+        deleteTask 
       }}
     >
       {children}
