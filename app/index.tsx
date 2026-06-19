@@ -39,7 +39,7 @@ export default function IndexScreen({ navigation }: Props) {
           <View style={styles.summaryHeader}>
             <Text style={styles.summaryTitle}>Resumo do dia</Text>
             <Text style={styles.summarySubtitle}>
-              {pendingCount} P | {inProgressCount} And | {completedCount} C
+              {pendingCount} Em Progresso. | {inProgressCount} Em andamento. | {completedCount} Concluida.
             </Text>
           </View>
           <Text style={styles.summaryNote}>
