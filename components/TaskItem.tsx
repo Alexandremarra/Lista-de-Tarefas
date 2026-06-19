@@ -11,9 +11,10 @@ import { Task } from "../context/TaskContext";
 type TaskItemProps = {
   task: Task;
   onPress: () => void;
+  onDelete: () => void; // Adicionado para receber a função de exclusão
 };
 
-export default function TaskItem({ task, onPress }: TaskItemProps) {
+export default function TaskItem({ task, onPress, onDelete }: TaskItemProps) {
   const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -42,7 +43,12 @@ export default function TaskItem({ task, onPress }: TaskItemProps) {
         },
       ]}
     >
-      <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+      {/* Lado esquerdo: Informações da tarefa (clicável para ver detalhes) */}
+      <TouchableOpacity 
+        onPress={onPress} 
+        activeOpacity={0.8} 
+        style={styles.taskDetailsContainer}
+      >
         <View>
           <Text style={[styles.title, task.completed && styles.completedText]}>
             {task.title}
@@ -56,6 +62,15 @@ export default function TaskItem({ task, onPress }: TaskItemProps) {
             {task.completed ? "✅ concluída" : "🕐 pendente"}
           </Text>
         </View>
+      </TouchableOpacity>
+
+      {/* Lado direito: Botão de Deletar */}
+      <TouchableOpacity 
+        onPress={onDelete} 
+        activeOpacity={0.7} 
+        style={styles.deleteButton}
+      >
+        <Text style={styles.deleteButtonText}>🗑️</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -74,6 +89,14 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
     elevation: 2,
+    // Garante que os textos e o botão fiquem lado a lado horizontalmente
+    flexDirection: "row", 
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  taskDetailsContainer: {
+    flex: 1, // Faz os textos ocuparem todo o espaço disponível, empurrando o botão para a ponta
+    marginRight: 12,
   },
   completedContainer: {
     opacity: 0.72,
@@ -95,5 +118,15 @@ const styles = StyleSheet.create({
   completedText: {
     textDecorationLine: "line-through",
     color: "#7b8d9e",
+  },
+  deleteButton: {
+    backgroundColor: "#fee2e2", // Um fundo vermelho bem clarinho (estilo tailwind red-100)
+    padding: 10,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deleteButtonText: {
+    fontSize: 16,
   },
 });

@@ -1,4 +1,5 @@
 import { StackScreenProps } from "@react-navigation/stack";
+import React from "react"; // Boa prática manter o React importado explicitamente
 import {
     FlatList,
     StyleSheet,
@@ -15,7 +16,9 @@ import { Task, useTaskContext } from "../context/TaskContext";
 type Props = StackScreenProps<RootStackParamList, "Home">;
 
 export default function HomeScreen({ navigation }: Props) {
-  const { tasks } = useTaskContext();
+  // Puxamos tasks e a função de deletar diretamente do seu Contexto customizado
+  const { tasks, deleteTask } = useTaskContext(); 
+
   const completedCount = tasks.filter((task) => task.completed).length;
   const pendingCount = tasks.length - completedCount;
   const progress = tasks.length ? completedCount / tasks.length : 0;
@@ -24,6 +27,8 @@ export default function HomeScreen({ navigation }: Props) {
     <TaskItem
       task={item}
       onPress={() => navigation.navigate("TaskDetails", { taskId: item.id })}
+      // Passamos a função de deletar como prop para dentro do item, caso ele precise dela
+      onDelete={() => deleteTask(item.id)} 
     />
   );
 
@@ -34,6 +39,7 @@ export default function HomeScreen({ navigation }: Props) {
         actionLabel="INFO"
         onActionPress={() => navigation.navigate("Info")}
       />
+      
       <View style={styles.content}>
         <View style={styles.summaryCard}>
           <View style={styles.summaryHeader}>
@@ -55,6 +61,7 @@ export default function HomeScreen({ navigation }: Props) {
         <Text style={styles.counter}>
           Toque em uma tarefa para ver detalhes
         </Text>
+        
         <FlatList
           data={tasks}
           keyExtractor={(item) => item.id}
@@ -73,6 +80,7 @@ export default function HomeScreen({ navigation }: Props) {
       >
         <Text style={styles.fabLabel}>＋ Nova Tarefa</Text>
       </TouchableOpacity>
+      
       <Footer />
     </View>
   );
