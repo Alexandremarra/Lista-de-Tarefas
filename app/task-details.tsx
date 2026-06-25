@@ -15,8 +15,12 @@ type Props = StackScreenProps<RootStackParamList, "TaskDetails">;
 
 export default function TaskDetailsScreen({ navigation, route }: Props) {
   const { taskId } = route.params;
-  const { getTaskById, toggleTask } = useTaskContext();
-  const task = getTaskById(taskId);
+  
+  // Pegamos a lista de tarefas (tasks) direto do contexto para monitorar as mudanças de estado
+  const { tasks, toggleTask } = useTaskContext();
+  
+  // Buscamos a tarefa diretamente do array reativo do React
+  const task = tasks.find((t) => t.id === taskId);
 
   if (!task) {
     return (
@@ -50,18 +54,18 @@ export default function TaskDetailsScreen({ navigation, route }: Props) {
         <Text
           style={[
             styles.value,
-            task.completed ? styles.completedText : styles.pendingText,
+            task?.completed ? styles.completedText : styles.pendingText,
           ]}
         >
-          {task.completed ? "Concluída" : "Pendente"}
+          {task?.completed ? "Concluída" : "Pendente"}
         </Text>
 
         <TouchableOpacity
-          style={[styles.button, task.completed && styles.pendingButton]}
-          onPress={() => toggleTask(task.id)}
+          style={[styles.button, task?.completed && styles.pendingButton]}
+          onPress={() => task?.id && toggleTask(task.id)}
         >
           <Text style={styles.buttonText}>
-            {task.completed ? "Marcar como Pendente" : "Marcar como Concluída"}
+            {task?.completed ? "Marcar como Pendente" : "Marcar como Concluída"}
           </Text>
         </TouchableOpacity>
 
