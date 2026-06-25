@@ -39,7 +39,7 @@ export default function ShareModal({ isVisible, onClose, taskTitle }: ShareModal
     >
       <View style={styles.overlay}>
         <div style={styles.modalContainer}>
-          <Text style={styles.title}>Compartilhar Tarefa</Text>
+          <Text style={styles.title}>Compartilhar a lista</Text>
           <Text style={styles.subtitle}>
             {taskTitle ? `Quer compartilhar a tarefa "${taskTitle}"?` : 'Compartilhe sua lista com seus amigos!'}
           </Text>
