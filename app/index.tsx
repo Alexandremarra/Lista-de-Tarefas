@@ -6,6 +6,8 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Share,
+    Alert,
 } from "react-native";
 import { RootStackParamList } from "../App"; 
 
@@ -16,23 +18,46 @@ import { Task, useTaskContext } from "../context/TaskContext";
 type Props = StackScreenProps<RootStackParamList, "Home">;
 
 export default function IndexScreen({ navigation }: Props) {
-  // 1. Puxamos as novas funções do seu contexto atualizado
   const { tasks, deleteTask, updateStatus } = useTaskContext(); 
 
-  // 2. Atualizamos os contadores para refletir os 3 estados
   const completedCount = tasks.filter((task) => task.status === "concluida").length;
   const inProgressCount = tasks.filter((task) => task.status === "andamento").length;
   const pendingCount = tasks.filter((task) => task.status === "pendente").length;
   
   const progress = tasks.length ? completedCount / tasks.length : 0;
 
+  const handleShareList = async () => {
+    try {
+      const message = `📋 Minha Lista de Tarefas de Hoje:\n\n` +
+        `⏳ Pendentes: ${pendingCount}\n` +
+        `🔄 Em andamento: ${inProgressCount}\n` +
+        `✅ Concluídas: ${completedCount}\n\n` +
+        `Falta pouco para atingir a meta do dia! 🚀`;
+
+      await Share.share({
+        message: message,
+      });
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível compartilhar a lista.");
+    }
+  };
+
   return (
     <View style={styles.safe}>
-      <Navbar
-        title="Minhas Tarefas"
-        actionLabel="INFO"
-        onActionPress={() => navigation.navigate("Info")}
-      />
+      {/* Container horizontal para alinhar a Navbar e o Compartilhar em linha reta */}
+      <View style={styles.navbarRow}>
+        <View style={styles.navbarWrapper}>
+          <Navbar
+            title="Minhas Tarefas"
+            actionLabel="INFO"
+            onActionPress={() => navigation.navigate("Info")}
+          />
+        </View>
+        
+        <TouchableOpacity style={styles.navShareButton} onPress={handleShareList}>
+          <Text style={styles.navShareText}>COMPARTILHAR</Text>
+        </TouchableOpacity>
+      </View>
       
       <View style={styles.content}>
         <View style={styles.summaryCard}>
@@ -92,6 +117,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#eceff4",
     paddingBottom: 100,
+  },
+  navbarRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2f343d", // Altere para a cor de fundo da sua Navbar para ficar uniforme
+    paddingRight: 16,
+  },
+  navbarWrapper: {
+    flex: 1,
+  },
+  navShareButton: {
+    backgroundColor: "#4b5563",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    marginLeft: 8,
+  },
+  navShareText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "700",
   },
   content: {
     flex: 1,
