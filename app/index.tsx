@@ -84,7 +84,7 @@ export default function IndexScreen({ navigation }: Props) {
         <FlatList
           data={tasks}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => ()
+          renderItem={({ item }) => (
             <TaskItem
               task={item}
               onPress={() => navigation.navigate("TaskDetails", { taskId: item.id })}
